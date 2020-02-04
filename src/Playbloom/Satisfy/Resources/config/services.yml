@@ -1,0 +1,108 @@
+services:
+  _defaults:
+    public: false
+
+  Playbloom\Satisfy\Service\Manager:
+    autowire: true
+    public: true
+    bind:
+      Symfony\Component\Lock\Lock: "@lock.satis"
+
+  satisfy.manager:
+    alias: Playbloom\Satisfy\Service\Manager
+
+  Playbloom\Satisfy\Persister\FilePersister:
+    autowire: true
+    arguments:
+      $filename: "%satis_filename%"
+      $logPath: "%satis_log_path%"
+
+  satisfy.persister.file:
+    alias: Playbloom\Satisfy\Persister\FilePersister
+
+  Playbloom\Satisfy\Persister\JsonPersister:
+    class: Playbloom\Satisfy\Persister\JsonPersister
+    public: false
+    arguments:
+      - "@satisfy.persister.file"
+      - "@satisfy.serializer.json"
+      - "Playbloom\\Satisfy\\Model\\Configuration"
+
+  satisfy.persister.json:
+    alias: Playbloom\Satisfy\Persister\JsonPersister
+
+  satisfy.serializer.json: "@jms_serializer"
+
+  satisfy.serializer.repository_collection_handler:
+    class: Playbloom\Satisfy\Serializer\RepositoryCollectionHandler
+    tags:
+      - { name: jms_serializer.handler, type: RepositoryCollection, direction: serialization, format: json, method: serializeCollection }
+      - { name: jms_serializer.handler, type: RepositoryCollection, direction: deserialization, format: json, method: deserializeCollection }
+
+  satisfy.serializer.require_collection_handler:
+    class: Playbloom\Satisfy\Serializer\RequireConstraintHandler
+    tags:
+      - { name: jms_serializer.handler, type: RequireCollection, direction: serialization, format: json, method: serializeCollection }
+      - { name: jms_serializer.handler, type: RequireCollection, direction: deserialization, format: json, method: deserializeCollection }
+
+  satisfy.processor.lock_processor:
+    alias: Playbloom\Satisfy\Service\LockProcessor
+
+  Playbloom\Satisfy\Service\LockProcessor:
+    autowire: true
+    public: true
+
+  satisfy.process.factory:
+    alias: Playbloom\Satisfy\Process\ProcessFactory
+
+  Playbloom\Satisfy\Process\ProcessFactory:
+    autowire: true
+    arguments:
+      $rootPath: "%kernel.project_dir%"
+      $composerHome: "%composer.home%"
+
+  Playbloom\Satisfy\Runner\SatisBuildRunner:
+    autowire: true
+    public: true
+    arguments:
+      $satisFilename: "%satis_filename%"
+    bind:
+      Symfony\Component\Lock\Lock: "@lock.build"
+    tags:
+      - { name: kernel.event_listener, event: Playbloom\Satisfy\Event\BuildEvent, method: onBuild }
+
+  ### Webhook handlers
+  satisfy.webhook.bitbucket:
+    alias: Playbloom\Satisfy\Webhook\BitbucketWebhook
+
+  Playbloom\Satisfy\Webhook\BitbucketWebhook:
+    autowire: true
+    public: true
+
+  satisfy.webhook.github:
+    alias: Playbloom\Satisfy\Webhook\GithubWebhook
+
+  Playbloom\Satisfy\Webhook\GithubWebhook:
+    autowire: true
+    public: true
+    arguments:
+      $secret: "%github.secret%"
+
+  satisfy.webhook.gitlab:
+    alias: Playbloom\Satisfy\Webhook\GitlabWebhook
+
+  Playbloom\Satisfy\Webhook\GitlabWebhook:
+    autowire: true
+    public: true
+    arguments:
+      $secret: "%gitlab.secret%"
+      $auto_add_repo: "%gitlab.auto_add_repo%"
+      $auto_add_repo_type: "%gitlab.auto_add_repo_type%"
+
+  Playbloom\Satisfy\Validator\EnvValidator:
+    autowire: true
+    public: true
+    arguments:
+      $root: "%kernel.project_dir%"
+      $satisFilename: "%satis_filename%"
+      $composerHome: "%composer.home%"

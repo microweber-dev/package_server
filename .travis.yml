@@ -1,0 +1,31 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4snapshot
+#  - nightly
+
+matrix:
+  allow_failures:
+    - php: nightly
+    - php: 7.4snapshot
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer
+    - vendor
+
+git:
+  depth: 1
+
+install:
+  - 'cp -f app/config/parameters.yml.dist app/config/parameters.yml'
+  - composer install -n --no-progress --prefer-dist
+
+script:
+  - bin/phpunit
+  - bin/phpstan analyse

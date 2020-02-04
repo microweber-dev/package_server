@@ -1,0 +1,93 @@
+{
+    "name": "playbloom/satisfy",
+    "license": "MIT",
+    "type": "project",
+    "keywords": ["satis", "composer", "backend", "ui", "packagist", "static-packagist"],
+    "description": "Satis composer repository manager with a Web UI",
+    "authors": [
+        {
+            "name": "Ludovic Fleury",
+            "email": "ludo.fleury@gmail.com"
+        },
+        {
+            "name": "Julius Beckmann",
+            "email": "satisfy@h4cc.de"
+        },
+        {
+            "name": "Ramūnas Dronga",
+            "email": "ieskok@ramuno.lt"
+        }
+    ],
+    "support": {
+        "email": "ludo.fleury@gmail.com"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "ext-xml": "*",
+        "composer/satis": "dev-master",
+        "composer/composer": "^1.7",
+        "jms/serializer-bundle": "^2.3",
+        "symfony/asset": "^3.4",
+        "symfony/form": "^3.4",
+        "symfony/lock": "^3.4",
+        "symfony/validator": "^3.4",
+        "symfony/framework-bundle": "^3.4",
+        "symfony/security-bundle": "^3.4",
+        "symfony/templating": "^3.4",
+        "symfony/twig-bundle": "^3.4",
+        "symfony/yaml": "^3.4",
+        "symfony/psr-http-message-bridge": "^1.1",
+        "doctrine/annotations": "~1.6",
+        "doctrine/instantiator": "~1.1",
+        "incenteev/composer-parameter-handler": "^2.1",
+        "swop/github-webhook": "^2.0",
+        "zendframework/zend-diactoros": "^1.8",
+        "ninsuo/symfony-collection": "^2.1",
+        "ramunasd/symfony-container-mocks": "^0.6.0"
+    },
+    "require-dev": {
+        "symfony/browser-kit": "^3.4",
+        "mikey179/vfsstream": "^1.6",
+        "phpunit/phpunit": "^7.4",
+        "friendsofphp/php-cs-fixer": "^2.13",
+        "phpstan/phpstan": "^0.11",
+        "phpstan/phpstan-phpunit": "^0.11",
+        "phpstan/phpstan-symfony": "^0.11",
+        "jangregor/phpstan-prophecy": "^0.4"
+    },
+    "autoload": {
+        "psr-4": { "Playbloom\\Satisfy\\": "src/Playbloom/Satisfy" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\": "tests" }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
+        "test": [
+            "@phpunit",
+            "@phpstan",
+            "@php-cs-fixer"
+        ],
+        "phpunit": "phpunit",
+        "phpstan": "phpstan analyse",
+        "php-cs-fixer": "php-cs-fixer fix --diff --show-progress=dots"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        },
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}
