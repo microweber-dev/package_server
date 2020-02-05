@@ -52,6 +52,9 @@ class RebuildCommand extends BuildCommand implements ContainerAwareInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+        echo 1115555211211;
+        die();
         $verbose = $input->getOption('verbose');
         $configFile = $input->getArgument('file');
         $packagesFilter = $input->getArgument('packages');
